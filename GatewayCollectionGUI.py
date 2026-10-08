@@ -2,6 +2,32 @@ from datetime import datetime
 from pathlib import Path
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import filedialog
+
+case_number = "-1"
+report_location = "\\"
+agency = ""
+analyst = ""
+
+def make_case_folder():
+    case_folder = Path(f"{report_location}\\{case_number}")
+    case_folder.mkdir(parents=True, exist_ok=True)
+
+def set_case_number(number):
+    global case_number
+    case_number = number
+
+def set_report_location(location):
+    global report_location
+    report_location = location
+
+def set_agency(name):
+    global agency
+    agency = name
+
+def set_analyst(name):
+    global analyst
+    analyst = name
 
 
 class AppController(tk.Tk):
@@ -29,41 +55,113 @@ class AppController(tk.Tk):
         frame.tkraise()
 
 
+
 class StartScreen(tk.Frame):
     def __init__(start_screen, parent, controller):
         super().__init__(parent)
         start_screen.controller = controller
 
-        label = tk.Label(start_screen, text="Enter Case Number:", font=("Arial", 12))
-        label.pack(pady=10)  # pady adds vertical spacing
+        def browse_directory():
+            dir_path = filedialog.askdirectory(title="Select a folder", initialdir="/")
+            if  dir_path:
+                global report_location
+                report_location = dir_path
+                report_location_entry.delete(0, tk.END)
+                report_location_entry.insert(0, report_location)
 
-        entry = tk.Entry(start_screen, font=("Arial", 12), width=25)
-        entry.pack(pady=5)
-
-        # 2. Define the button action (the logic)
-        def on_submit():
-            user_input = entry.get()  # Get text from the input field
+        def is_entry_blank(entry):
+            user_input = entry.get()
             if user_input.strip() == "":
-                messagebox.showwarning("Warning", "Please enter a name!")
+                return True
             else:
-                case_folder = Path(f"{user_input}")
-                case_folder.mkdir(parents=True, exist_ok=True)
+                return False
 
-        # Add a submit button
+        def on_submit():
+            if is_entry_blank(case_number_entry) == False:
+                set_case_number(case_number_entry.get())
+            else:
+                messagebox.showwarning("Warning", "Please enter a Case Number!")
+                return
+            
+            if is_entry_blank(agency_entry) == False:
+                set_agency(agency_entry.get())
+            else:
+                messagebox.showwarning("Warning", "Please enter an Agency!")
+                return
+            
+            if is_entry_blank(analyst_entry) == False:
+                set_analyst(analyst_entry.get())
+            else:
+                messagebox.showwarning("Warning", "Please enter an Analyst!")
+                return
+            
+            if is_entry_blank(report_location_entry) == False:
+                set_agency(report_location_entry.get())
+            else:
+                messagebox.showwarning("Warning", "Please enter a Report Location!")
+                return
+
+            make_case_folder()
+            start_screen.controller.show_frame(MainScreen)
+            
+
+        title = tk.Label(start_screen, text="Gateway Collection Tool", font=("Arial", 18))
+        title.grid(row=0, column=1, padx=10, pady=10, sticky="e")
+
+        case_number_title = tk.Label(start_screen, text="Case Number:", font=("Arial", 12))
+        case_number_entry = tk.Entry(start_screen, font=("Arial", 12), width=25)
+        case_number_title.grid(row=1, column=0, padx=10, pady=10, sticky="e")
+        case_number_entry.grid(row=1, column=1, padx=10, pady=10)
+
+        agency_title = tk.Label(start_screen, text="Agency:", font=("Arial", 12))
+        agency_entry = tk.Entry(start_screen, font=("Arial", 12), width=25)
+        agency_title.grid(row=2, column=0, padx=10, pady=10, sticky="e")
+        agency_entry.grid(row=2, column=1, padx=10, pady=10)
+
+        analyst_title = tk.Label(start_screen, text="Analyst:", font=("Arial", 12))
+        analyst_entry = tk.Entry(start_screen, font=("Arial", 12), width=25)
+        analyst_title.grid(row=3, column=0, padx=10, pady=10, sticky="e")
+        analyst_entry.grid(row=3, column=1, padx=10, pady=10)
+
+        report_location_title = tk.Label(start_screen, text="Report Location:", font=("Arial", 12))
+        report_location_entry = tk.Entry(start_screen, font=("Arial", 12), width=25)
+        report_location_button = tk.Button(start_screen, text="Browse Folder...", command=browse_directory)
+        report_location_title.grid(row=4, column=0, padx=0, pady=10, sticky="e")
+        report_location_entry.grid(row=4, column=1, padx=0, pady=10)
+        report_location_button.grid(row=4, column=2, padx=0, pady=0)
+
         submit_button = tk.Button(start_screen, text="Submit", font=("Arial", 10, "bold"), command=on_submit)
-        submit_button.pack(pady=10)
-
-        # Add a label to display the output
-        result_label = tk.Label(start_screen, text="", font=("Arial", 12, "italic"), fg="blue")
-        result_label.pack(pady=10)
+        submit_button.grid(row=5, column=1, padx=10, pady=10)
 
 
 
 class MainScreen(tk.Frame):
     def __init__(main_screen, parent, controller):
+            scan_type = ""
+            
             super().__init__(parent)
             main_screen.controller = controller
-# 4. Start the GUI application event loop
+
+            def start_scan():
+                start_scan_button['state'] = tk.DISABLED
+                if (residential_scan_button['state'] == tk.DISABLED):
+                    print("ran Residential Scan")
+
+            def residential_scan():
+                residential_scan_button['state'] = tk.DISABLED
+
+            title = tk.Label(main_screen, text="Gateway Collection Tool", font=("Arial", 18))
+            title.grid(row=0, column=1, padx=10, pady=10, sticky="e")
+
+            pick_scan_title = tk.Label(main_screen, text="Please Pick a Scan From Below:", font=("Arial", 18))
+            pick_scan_title.grid(row=1, column=1, padx=10, pady=10, sticky="e")
+
+            residential_scan_button = tk.Button(main_screen, text="Residential Scan", font=("Arial", 10, "bold"), command=residential_scan)
+            residential_scan_button.grid(row=2, column=0, padx=10, pady=10)
+
+            start_scan_button = tk.Button(main_screen, text="Start Scan", font=("Arial", 10, "bold"), command=start_scan)
+            start_scan_button.grid(row=3, column=1, padx=10, pady=10)
+
 
 if __name__ == "__main__":
     app = AppController()

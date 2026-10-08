@@ -6,6 +6,26 @@ import re
 from pathlib import Path
 from datetime import datetime
 
+case_number = "-1"
+path = "\\"
+agency = ""
+analyst = ""
+
+def set_case_number(number):
+    global case_number
+    case_number = number
+
+def set_path(location):
+    global path
+    path = location
+
+def set_agency(name):
+    global agency
+    agency = name
+
+def set_analyst(name):
+    global analyst
+    analyst = name
 
 def run_command(command, output_file, timeout=300):
     with open(output_file, "w", encoding="utf-8", errors="ignore") as file_stream:
@@ -152,15 +172,18 @@ def classify_text(text):
     return results
 
 
-def main():
-    case_folder = Path(f"Gateway_Mode1_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
-    windows_folder = case_folder / "Windows"
-    scan_folder = case_folder / "Scans"
+def main(case_number, path, agency, analyst):
+    set_case_number(case_number)
+    set_path(path)
+    set_agency(agency)
+    set_analyst(analyst)
 
-    windows_folder.mkdir(parents=True, exist_ok=True)
+    scan_folder = Path(f"{path}\\{case_number}\\Resida_Mode_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+    scan_folder = scan_folder / "Scans"
+
     scan_folder.mkdir(parents=True, exist_ok=True)
 
-    print(f"[+] Case folder created: {case_folder}")
+    print(f"[+] Scan folder created: {scan_folder}")
 
     active = get_active_network()
 
@@ -192,7 +215,7 @@ def main():
 
     for filename, command in windows_commands.items():
         print(f"[+] Windows: {command}")
-        run_command(command, windows_folder / filename)
+        run_command(command, scan_folder / filename)
 
     nmap_path = find_nmap()
 
@@ -217,7 +240,7 @@ def main():
 
     combined_text = ""
 
-    for file in case_folder.rglob("*.txt"):
+    for file in scan_folder.rglob("*.txt"):
         try:
             combined_text += "\n\n" + file.read_text(encoding="utf-8", errors="ignore")
         except Exception:
@@ -225,7 +248,7 @@ def main():
 
     classifications = classify_text(combined_text)
 
-    summary_file = case_folder / "GATEWAY_MODE1_SUMMARY.txt"
+    summary_file = scan_folder / "GATEWAY_MODE1_SUMMARY.txt"
 
     with open(summary_file, "w", encoding="utf-8") as f:
         f.write("GATEWAY MODE 1 NETWORK INTELLIGENCE SUMMARY\n")
@@ -274,10 +297,10 @@ def main():
         f.write("8. Export configuration backup if available.\n")
         f.write("9. Document cameras, NVRs, DVRs, NAS devices, and unknown mobile devices.\n")
 
-    hash_file = case_folder / "SHA256SUMS_CASE.txt"
+    hash_file = scan_folder / "SHA256SUMS_CASE.txt"
 
     with open(hash_file, "w", encoding="utf-8") as f:
-        for file in case_folder.rglob("*"):
+        for file in scan_folder.rglob("*"):
             if file.is_file() and file.name != "SHA256SUMS_CASE.txt":
                 try:
                     f.write(f"{sha256_file(file)}  {file}\n")
