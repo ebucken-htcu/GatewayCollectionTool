@@ -178,7 +178,7 @@ def main(case_number, path, agency, analyst):
     set_agency(agency)
     set_analyst(analyst)
 
-    scan_folder = Path(f"{path}\\{case_number}\\Resida_Mode_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
+    scan_folder = Path(f"{path}\\{case_number}\\Residential_Mode_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
     scan_folder = scan_folder / "Scans"
 
     scan_folder.mkdir(parents=True, exist_ok=True)

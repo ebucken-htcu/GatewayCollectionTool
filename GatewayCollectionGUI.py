@@ -1,6 +1,7 @@
 from datetime import datetime
 from pathlib import Path
 import tkinter as tk
+import ResidentialScan
 from tkinter import messagebox
 from tkinter import filedialog
 
@@ -145,7 +146,13 @@ class MainScreen(tk.Frame):
             def start_scan():
                 start_scan_button['state'] = tk.DISABLED
                 if (residential_scan_button['state'] == tk.DISABLED):
-                    print("ran Residential Scan")
+                    print(f"[+] Started Residential Scan")
+                    ResidentialScan.main(case_number, report_location, agency, analyst)
+                    print(f"[+] Residential Scan is done")
+                    start_scan_button['state'] = tk.NORMAL
+                    residential_scan_button['state'] = tk.NORMAL
+                    messagebox.showinfo("Scan Complete!", "The Residential Scan is now complete! You can now run another scan")
+
 
             def residential_scan():
                 residential_scan_button['state'] = tk.DISABLED
