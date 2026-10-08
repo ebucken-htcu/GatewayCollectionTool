@@ -18,7 +18,7 @@ class AppController(tk.Tk):
         main_frame.frames = {}
 
         for ScreenClass in (StartScreen, MainScreen):
-            frame = ScreenClass(parent=container, controller=self)
+            frame = ScreenClass(parent=container, controller=main_frame)
             main_frame.frames[ScreenClass] = frame
             frame.grid(row = 0, column = 0, sticky = "nsew")
         
@@ -34,32 +34,37 @@ class StartScreen(tk.Frame):
         super().__init__(parent)
         start_screen.controller = controller
 
-    label = tk.Label(, text="Enter Case Number:", font=("Arial", 12))
-label.pack(pady=10)  # pady adds vertical spacing
+        label = tk.Label(start_screen, text="Enter Case Number:", font=("Arial", 12))
+        label.pack(pady=10)  # pady adds vertical spacing
 
-# Add a text entry field
-entry = tk.Entry(root, font=("Arial", 12), width=25)
-entry.pack(pady=5)
+        entry = tk.Entry(start_screen, font=("Arial", 12), width=25)
+        entry.pack(pady=5)
 
-# Add a submit button
-submit_button = tk.Button(root, text="Submit", font=("Arial", 10, "bold"), command=on_submit)
-submit_button.pack(pady=10)
+        # 2. Define the button action (the logic)
+        def on_submit():
+            user_input = entry.get()  # Get text from the input field
+            if user_input.strip() == "":
+                messagebox.showwarning("Warning", "Please enter a name!")
+            else:
+                case_folder = Path(f"{user_input}")
+                case_folder.mkdir(parents=True, exist_ok=True)
 
-# Add a label to display the output
-result_label = tk.Label(root, text="", font=("Arial", 12, "italic"), fg="blue")
-result_label.pack(pady=10)
+        # Add a submit button
+        submit_button = tk.Button(start_screen, text="Submit", font=("Arial", 10, "bold"), command=on_submit)
+        submit_button.pack(pady=10)
 
-# 2. Define the button action (the logic)
-def on_submit():
-    user_input = entry.get()  # Get text from the input field
-    if user_input.strip() == "":
-        messagebox.showwarning("Warning", "Please enter a name!")
-    else:
-        case_folder = Path(f"{user_input}")
-        case_folder.mkdir(parents=True, exist_ok=True)
-
+        # Add a label to display the output
+        result_label = tk.Label(start_screen, text="", font=("Arial", 12, "italic"), fg="blue")
+        result_label.pack(pady=10)
 
 
+
+class MainScreen(tk.Frame):
+    def __init__(main_screen, parent, controller):
+            super().__init__(parent)
+            main_screen.controller = controller
 # 4. Start the GUI application event loop
 
-root.mainloop()
+if __name__ == "__main__":
+    app = AppController()
+    app.mainloop()
