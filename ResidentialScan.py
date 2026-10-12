@@ -145,7 +145,7 @@ def classify_text(text):
         ],
         "Potential Storage / NAS": [
             "synology", "qnap", "nas", "wdmycloud", "mycloud",
-            "seagate", "storage"
+            "seagate", "storage", "ugreen", "unraid", "truenas"
         ],
         "Potential Gaming / Streaming": [
             "xbox", "playstation", "ps4", "ps5", "nintendo",
@@ -201,11 +201,11 @@ def main(case_number, path, agency, analyst):
 
     windows_commands = {
         "date_time.txt": "powershell Get-Date",
-        "ipconfig_all.txt": "ipconfig /all",
-        "route_print.txt": "route print",
-        "arp_cache.txt": "arp -a",
-        "get_net_ip_configuration.txt": "powershell Get-NetIPConfiguration",
-        "get_net_neighbor.txt": "powershell Get-NetNeighbor",
+        "network_list.txt": "powershell Start-Process \"ms-availablenetworks:\"; Start-Sleep -Seconds 5; netsh wlan show networks mode=bssid",
+        "get_net_connection_profile.txt": "powershell Get-NetConnectionProfile",
+        "get_net_ip_configuration.txt": "powershell Get-NetIPConfiguration -Detailed",
+        "get_net_neighbor.txt": "powershell -Command \"Get-NetNeighbor | Where-Object State -ne 'Unreachable'\"",
+        "get_net_route.txt": "powershell Get-NetRoute",
         "gateway_ping.txt": f"ping {gateway}",
         "gateway_port_80.txt": f"powershell Test-NetConnection {gateway} -Port 80",
         "gateway_port_443.txt": f"powershell Test-NetConnection {gateway} -Port 443",
@@ -248,10 +248,10 @@ def main(case_number, path, agency, analyst):
 
     classifications = classify_text(combined_text)
 
-    summary_file = scan_folder / "GATEWAY_MODE1_SUMMARY.txt"
+    summary_file = "RESIDENTIAL_SCAN_SUMMARY.txt"
 
     with open(summary_file, "w", encoding="utf-8") as f:
-        f.write("GATEWAY MODE 1 NETWORK INTELLIGENCE SUMMARY\n")
+        f.write("Residential Scan NETWORK INTELLIGENCE SUMMARY\n")
         f.write("=" * 80 + "\n\n")
         f.write(f"Collection Time: {datetime.now()}\n")
         f.write(f"Collection Laptop: {platform.node()}\n")
@@ -264,12 +264,12 @@ def main(case_number, path, agency, analyst):
         f.write(f"Gateway: {gateway}\n")
         f.write(f"Subnet: {subnet}\n\n")
 
-        f.write("MODE LIMITATION\n")
+        f.write("Residential LIMITATION\n")
         f.write("-" * 80 + "\n")
-        f.write("Mode 1 does not log into the gateway.\n")
-        f.write("Mode 1 does not collect historical gateway logs.\n")
-        f.write("Mode 1 does not collect Xfinity/account information.\n")
-        f.write("Mode 1 only identifies the gateway and currently visible network devices.\n\n")
+        f.write("Residential script does not log into the gateway.\n")
+        f.write("Residential script does not collect historical gateway logs.\n")
+        f.write("Residential script does not collect ISP account information.\n")
+        f.write("Residential script only identifies the gateway and currently visible network devices.\n\n")
 
         for category, hits in classifications.items():
             f.write(category.upper() + "\n")
@@ -297,7 +297,7 @@ def main(case_number, path, agency, analyst):
         f.write("8. Export configuration backup if available.\n")
         f.write("9. Document cameras, NVRs, DVRs, NAS devices, and unknown mobile devices.\n")
 
-    hash_file = scan_folder / "SHA256SUMS_CASE.txt"
+    hash_file = "SHA256SUMS_CASE.txt"
 
     with open(hash_file, "w", encoding="utf-8") as f:
         for file in scan_folder.rglob("*"):
@@ -313,5 +313,5 @@ def main(case_number, path, agency, analyst):
 
 
 if __name__ == "__main__":
-    main()
+    main(-1, "TestRuns", "test", "test")
 

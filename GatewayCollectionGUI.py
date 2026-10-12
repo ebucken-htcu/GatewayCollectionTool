@@ -138,7 +138,6 @@ class StartScreen(tk.Frame):
 
 class MainScreen(tk.Frame):
     def __init__(main_screen, parent, controller):
-            scan_type = ""
             
             super().__init__(parent)
             main_screen.controller = controller
@@ -152,9 +151,10 @@ class MainScreen(tk.Frame):
                     start_scan_button['state'] = tk.NORMAL
                     residential_scan_button['state'] = tk.NORMAL
                     messagebox.showinfo("Scan Complete!", "The Residential Scan is now complete! You can now run another scan")
+                else:
+                    start_scan_button['state'] = tk.NORMAL
 
-
-            def residential_scan():
+            def residential_scan_clicked():
                 residential_scan_button['state'] = tk.DISABLED
 
             title = tk.Label(main_screen, text="Gateway Collection Tool", font=("Arial", 18))
@@ -163,7 +163,7 @@ class MainScreen(tk.Frame):
             pick_scan_title = tk.Label(main_screen, text="Please Pick a Scan From Below:", font=("Arial", 18))
             pick_scan_title.grid(row=1, column=1, padx=10, pady=10, sticky="e")
 
-            residential_scan_button = tk.Button(main_screen, text="Residential Scan", font=("Arial", 10, "bold"), command=residential_scan)
+            residential_scan_button = tk.Button(main_screen, text="Residential Scan", font=("Arial", 10, "bold"), command=residential_scan_clicked)
             residential_scan_button.grid(row=2, column=0, padx=10, pady=10)
 
             start_scan_button = tk.Button(main_screen, text="Start Scan", font=("Arial", 10, "bold"), command=start_scan)
