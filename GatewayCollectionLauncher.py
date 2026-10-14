@@ -6,7 +6,7 @@ import requests
 
 CURRENT_VERSION = "0.2.0"
 VERSION_URL = ""
-MAIN_EXE_NAME = ""
+MAIN_EXE_NAME = "GatewayCollectionTool.exe"
 
 last_attempted_update = ""
 
@@ -40,7 +40,11 @@ def update_app(latest_version, download_url):
     print("Launching New Version!")
 
 def launch_app():
-    subprocess.run([sys.executable])
+    if os.path.exists(MAIN_EXE_NAME):
+        subprocess.Popen([MAIN_EXE_NAME])
+    else:
+        print(f"Critical error: {MAIN_EXE_NAME} missing!")
+        input("Press Enter to exit...")
 
 if __name__ == "__main__":
     check_for_update()
