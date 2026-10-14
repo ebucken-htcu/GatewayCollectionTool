@@ -201,6 +201,7 @@ def main(case_number, path, agency, analyst):
 
     windows_commands = {
         "date_time.txt": "powershell Get-Date",
+        "connected_network_interface.txt": "netsh wlan show interfaces",
         "network_list.txt": "powershell Start-Process \"ms-availablenetworks:\"; Start-Sleep -Seconds 5; netsh wlan show networks mode=bssid",
         "get_net_connection_profile.txt": "powershell Get-NetConnectionProfile",
         "get_net_ip_configuration.txt": "powershell Get-NetIPConfiguration -Detailed",
