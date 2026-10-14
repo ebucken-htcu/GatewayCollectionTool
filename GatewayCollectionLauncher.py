@@ -5,7 +5,7 @@ import os
 import requests
 
 CURRENT_VERSION = "0.2.0"
-VERSION_URL = ""
+VERSION_URL = "https://github.com/ebucken-htcu/GatewayCollectionTool/blob/Main/version.json"
 MAIN_EXE_NAME = "GatewayCollectionTool.exe"
 
 last_attempted_update = ""
@@ -22,6 +22,8 @@ def check_for_update():
 
         if (latest_version > CURRENT_VERSION):
             update_app(latest_version, download_url)
+        else:
+            print("Gateway Collection Tool is up to date!")
     except Exception as exception:
         print(f"Update failed or skipped: {exception}")
         print(f"Launching existing version")
