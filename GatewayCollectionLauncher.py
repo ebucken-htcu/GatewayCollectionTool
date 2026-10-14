@@ -1,14 +1,27 @@
 from datetime import datetime
 import subprocess
-import sys
+import json
 import os
 import requests
 
-CURRENT_VERSION = "0.2.0"
 VERSION_URL = "https://github.com/ebucken-htcu/GatewayCollectionTool/releases/latest/download/version.json"
 MAIN_EXE_NAME = "GatewayCollectionTool.exe"
 
-last_attempted_update = ""
+
+def get_local_version():
+    try:
+        with open('version.json', 'r', encoding='utf-8') as file:
+            data = json.load(file)
+            version = data["version"]
+            print(f"Currently running version: {version}")
+            return version
+    except FileNotFoundError:
+        print("Error: the file version.json is missing!")
+        return -1
+    except json.JSONDecodeError:
+        print("Error: version.json contains invalid JSON syntax!")
+        return -1
+
 
 def check_for_update():
     print("checking for updates...")
@@ -20,10 +33,13 @@ def check_for_update():
         latest_version = data["version"]
         download_url = data["download_url"]
 
-        if (latest_version > CURRENT_VERSION):
-            update_app(latest_version, download_url)
-        else:
-            print("Gateway Collection Tool is up to date!")
+        local_version = get_local_version()
+
+        if (local_version != -1):
+            if (latest_version > CURRENT_VERSION):
+                update_app(latest_version, download_url)
+            else:
+                print("Gateway Collection Tool is up to date!")
     except Exception as exception:
         print(f"Update failed or skipped: {exception}")
         print(f"Launching existing version")
