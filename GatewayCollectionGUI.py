@@ -168,6 +168,13 @@ class MainScreen(tk.Frame):
             def residential_scan_clicked():
                 residential_scan_button['state'] = tk.DISABLED
 
+            def back_button_clicked():
+                if (start_scan_button["state"] == tk.DISABLED):
+                    messagebox.showwarning("Please Wait!", "The Scan is still running!")
+                else:
+                    residential_scan_button['state'] = tk.NORMAL
+                    main_screen.controller.show_frame(StartScreen)
+
             title = tk.Label(main_screen, text="Gateway Collection Tool", font=("Arial", 18))
             title.grid(row=0, column=1, padx=10, pady=10, sticky="e")
 
@@ -178,7 +185,10 @@ class MainScreen(tk.Frame):
             residential_scan_button.grid(row=2, column=0, padx=10, pady=10)
 
             start_scan_button = tk.Button(main_screen, text="Start Scan", font=("Arial", 10, "bold"), command=start_scan)
-            start_scan_button.grid(row=3, column=1, padx=10, pady=10)
+            start_scan_button.grid(row=3, column=0, padx=10, pady=10)
+
+            back_button = tk.Button(main_screen, text="Back", font=("Arial", 10, "bold"), command=back)
+            back_button.grid(row=3, column=2, padx=10, pady=10)
 
 
 if __name__ == "__main__":
