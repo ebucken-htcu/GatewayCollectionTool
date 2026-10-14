@@ -62,6 +62,9 @@ class StartScreen(tk.Frame):
         super().__init__(parent)
         start_screen.controller = controller
 
+        def show_alert(title, body):
+            messagebox.showinfo(title, body)
+
         def browse_directory():
             dir_path = filedialog.askdirectory(title="Select a folder", initialdir="/")
             if  dir_path:
@@ -141,6 +144,9 @@ class MainScreen(tk.Frame):
             
             super().__init__(parent)
             main_screen.controller = controller
+
+            def show_alert(title, body):
+                messagebox.showinfo(title, body)
 
             def start_scan():
                 start_scan_button['state'] = tk.DISABLED
