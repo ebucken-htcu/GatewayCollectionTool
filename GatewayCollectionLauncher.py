@@ -36,7 +36,7 @@ def check_for_update():
         local_version = get_local_version()
 
         if (local_version != -1):
-            if (latest_version > CURRENT_VERSION):
+            if (latest_version > local_version):
                 update_app(latest_version, download_url)
             else:
                 print("Gateway Collection Tool is up to date!")
