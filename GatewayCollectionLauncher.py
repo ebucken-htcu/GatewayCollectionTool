@@ -46,7 +46,7 @@ def check_for_update():
 
 
 def update_app(latest_version, download_url):
-    print(f"New Version {latest_version} found! Downloading!=...")
+    print(f"New Version {latest_version} found! Downloading...")
     
     exe_response = requests.get(download_url, timeout=30)
     exe_response.raise_for_status()

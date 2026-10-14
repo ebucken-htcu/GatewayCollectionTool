@@ -127,15 +127,20 @@ class StartScreen(tk.Frame):
         analyst_title.grid(row=3, column=0, padx=10, pady=10, sticky="e")
         analyst_entry.grid(row=3, column=1, padx=10, pady=10)
 
+        address_title = tk.Label(start_screen, text="Address:", font=("Arial", 12))
+        address_entry = tk.Entry(start_screen, font=("Arial", 12), width=25)
+        address_title.grid(row=4, column=0, padx=10, pady=10, sticky="e")
+        address_entry.grid(row=4, column=1, padx=10, pady=10)
+
         report_location_title = tk.Label(start_screen, text="Report Location:", font=("Arial", 12))
         report_location_entry = tk.Entry(start_screen, font=("Arial", 12), width=25)
         report_location_button = tk.Button(start_screen, text="Browse Folder...", command=browse_directory)
-        report_location_title.grid(row=4, column=0, padx=0, pady=10, sticky="e")
-        report_location_entry.grid(row=4, column=1, padx=0, pady=10)
-        report_location_button.grid(row=4, column=2, padx=0, pady=0)
+        report_location_title.grid(row=5, column=0, padx=0, pady=10, sticky="e")
+        report_location_entry.grid(row=5, column=1, padx=0, pady=10)
+        report_location_button.grid(row=5, column=2, padx=0, pady=0)
 
         submit_button = tk.Button(start_screen, text="Submit", font=("Arial", 10, "bold"), command=on_submit)
-        submit_button.grid(row=5, column=1, padx=10, pady=10)
+        submit_button.grid(row=6, column=1, padx=10, pady=10)
 
 
 
