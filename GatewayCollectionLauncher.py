@@ -5,7 +5,7 @@ import os
 import requests
 
 CURRENT_VERSION = "0.2.0"
-VERSION_URL = "https://github.com/ebucken-htcu/GatewayCollectionTool/blob/Main/version.json"
+VERSION_URL = "https://github.com/ebucken-htcu/GatewayCollectionTool/releases/latest/download/version.json"
 MAIN_EXE_NAME = "GatewayCollectionTool.exe"
 
 last_attempted_update = ""
