@@ -56,7 +56,6 @@ class AppController(tk.Tk):
         frame = self.frames[screen_class]
         frame.tkraise()
 
-
 class StartScreen(tk.Frame):
     def __init__(start_screen, parent, controller):
         super().__init__(parent)
