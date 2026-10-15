@@ -1,6 +1,6 @@
 # Gateway Collection Tool
 ## Description
-This is a tool that you can run to collect information from a router on scene. Currently there is only a mode to collect information from residential home networks. Only works on x64 windows machines.
+This is a Digital Forensics and Incident Response tool that you can run to collect information from a router on scene. Currently there is only a mode to collect information from residential home networks. Only works on x64 windows machines.
 ### Setup Instructions
 1. download the latest file
     - GatewayCollectionLauncher.exe
