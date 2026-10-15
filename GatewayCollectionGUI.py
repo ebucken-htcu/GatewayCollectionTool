@@ -2,6 +2,7 @@ from datetime import datetime
 from pathlib import Path
 import tkinter as tk
 import ResidentialScan
+from fpdf import FPDF
 from tkinter import messagebox
 from tkinter import filedialog
 
@@ -54,7 +55,6 @@ class AppController(tk.Tk):
     def show_frame(self, screen_class):
         frame = self.frames[screen_class]
         frame.tkraise()
-
 
 
 class StartScreen(tk.Frame):
@@ -141,7 +141,6 @@ class StartScreen(tk.Frame):
 
         submit_button = tk.Button(start_screen, text="Submit", font=("Arial", 10, "bold"), command=on_submit)
         submit_button.grid(row=6, column=1, padx=10, pady=10)
-
 
 
 class MainScreen(tk.Frame):

@@ -98,10 +98,10 @@ def update_app(download_url):
     try:
         with open(MAIN_EXE_NAME, "wb") as file_stream:
             file_stream.write(exe_response.content)
+            print("Update Complete!")
     except Exception as exception:
         print(f"failed to update {MAIN_EXE_NAME}: {exception}")
 
-    print("Update Complete!")
 
 def launch_app(download_url):
     if os.path.exists(MAIN_EXE_NAME):
