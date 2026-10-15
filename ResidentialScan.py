@@ -179,11 +179,11 @@ def main(case_number, path, agency, analyst):
     set_analyst(analyst)
 
     scan_folder = Path(f"{path}\\{case_number}\\Residential_Mode_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
-    scan_folder = scan_folder / "Scans"
+    scans_sub_folder = scan_folder / "Scans"
 
-    scan_folder.mkdir(parents=True, exist_ok=True)
+    scans_sub_folder.mkdir(parents=True, exist_ok=True)
 
-    print(f"[+] Scan folder created: {scan_folder}")
+    print(f"[+] Scan folder created: {scans_sub_folder}")
 
     active = get_active_network()
 
@@ -216,7 +216,7 @@ def main(case_number, path, agency, analyst):
 
     for filename, command in windows_commands.items():
         print(f"[+] Windows: {command}")
-        run_command(command, scan_folder / filename)
+        run_command(command, scans_sub_folder / filename)
 
     nmap_path = find_nmap()
 
@@ -231,7 +231,7 @@ def main(case_number, path, agency, analyst):
 
         for filename, command in nmap_commands.items():
             print(f"[+] Nmap: {command}")
-            run_command(command, scan_folder / filename, timeout=600)
+            run_command(command, scans_sub_folder / filename, timeout=600)
     else:
         print("[!] Nmap not found. Install Nmap for Windows.")
         (scan_folder / "nmap_status.txt").write_text(
@@ -241,7 +241,7 @@ def main(case_number, path, agency, analyst):
 
     combined_text = ""
 
-    for file in scan_folder.rglob("*.txt"):
+    for file in scans_sub_folder.rglob("*.txt"):
         try:
             combined_text += "\n\n" + file.read_text(encoding="utf-8", errors="ignore")
         except Exception:
@@ -251,7 +251,7 @@ def main(case_number, path, agency, analyst):
 
     summary_file = "RESIDENTIAL_SCAN_SUMMARY.txt"
 
-    with open(summary_file, "w", encoding="utf-8") as f:
+    with open(scan_folder / summary_file, "w", encoding="utf-8") as f:
         f.write("Residential Scan NETWORK INTELLIGENCE SUMMARY\n")
         f.write("=" * 80 + "\n\n")
         f.write(f"Collection Time: {datetime.now()}\n")
@@ -300,7 +300,7 @@ def main(case_number, path, agency, analyst):
 
     hash_file = "SHA256SUMS_CASE.txt"
 
-    with open(hash_file, "w", encoding="utf-8") as f:
+    with open(scan_folder / hash_file, "w", encoding="utf-8") as f:
         for file in scan_folder.rglob("*"):
             if file.is_file() and file.name != "SHA256SUMS_CASE.txt":
                 try:

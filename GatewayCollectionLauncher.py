@@ -30,14 +30,33 @@ def get_local_version():
             return version
     except FileNotFoundError:
         print("Error: the file version.json is missing!")
-        return -1
+        print("Downloading new version.json...")
+        exe_response = requests.get(VERSION_URL, timeout=30)
+        exe_response.raise_for_status()
+        
+        try:
+            with open("version.json", "wb") as file_stream:
+                file_stream.write(exe_response.content)
+        except Exception as exception:
+            print(f"failed to download new version.json: {exception}")
+        
+        return "0"
     except json.JSONDecodeError:
-        print("Error: version.json contains invalid JSON syntax!")
-        return -1
+        print("Error: the file version.json has Syntax errors!")
+        print("Downloading new version.json...")
+        exe_response = requests.get(VERSION_URL, timeout=30)
+        exe_response.raise_for_status()
+        
+        try:
+            with open("version.json", "wb") as file_stream:
+                file_stream.write(exe_response.content)
+        except Exception as exception:
+            print(f"failed to download new version.json: {exception}")
+        return "-1"
 
 
 def check_for_update():
-    print("checking for updates...")
+    print("checking latest version...")
     try:
         response = requests.get(VERSION_URL, timeout=10)
         response.raise_for_status()
@@ -48,19 +67,30 @@ def check_for_update():
 
         local_version = get_local_version()
 
-        if (local_version != -1):
+        if (local_version > "0"):
             if (latest_version > local_version):
-                update_app(latest_version, download_url)
+                update_app(download_url)
                 update_local_version(latest_version)
+                print(f"New Version {latest_version} found! Downloading...") 
             else:
                 print("Gateway Collection Tool is up to date!")
+        elif (local_version == "0"):
+            print(f"Downloading Latest release because version.json was missing...")
+            update_local_version(latest_version)
+            update_app(download_url)
+        elif (local_version == "-1"):
+            print(f"Downloading Latest release because version.json was invalid...")
+            update_local_version(latest_version)
+            update_app(download_url)
+
+        return download_url
     except Exception as exception:
         print(f"Update failed or skipped: {exception}")
         print(f"Launching existing version")
+        return "failed to get download_url"
 
 
-def update_app(latest_version, download_url):
-    print(f"New Version {latest_version} found! Downloading...")
+def update_app(download_url):
     
     exe_response = requests.get(download_url, timeout=30)
     exe_response.raise_for_status()
@@ -73,14 +103,16 @@ def update_app(latest_version, download_url):
 
     print("Update Complete!")
 
-def launch_app():
+def launch_app(download_url):
     if os.path.exists(MAIN_EXE_NAME):
         subprocess.Popen([MAIN_EXE_NAME])
         print("Launching New Version!")
     else:
-        print(f"Critical error: {MAIN_EXE_NAME} missing!")
-        input("Press Enter to exit...")
+        print(f"Error: {MAIN_EXE_NAME} missing!")
+        print(f"Downloading latest {MAIN_EXE_NAME}...")
+        update_app(download_url)
+        input("Please relaunch. Press Enter to Continue...")
 
 if __name__ == "__main__":
-    check_for_update()
-    launch_app()
+    download_url = check_for_update()
+    launch_app(download_url)
