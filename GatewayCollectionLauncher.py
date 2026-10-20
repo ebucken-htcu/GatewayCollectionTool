@@ -26,10 +26,11 @@ def hash(file_name):
 
 def get_github_hash():
     try:
-        data = requests.get("https://github.com/ebucken-htcu/GatewayCollectionTool/releases/latest/version.json", 
+        data = requests.get("https://github.com/ebucken-htcu/GatewayCollectionTool/releases/latest/download/version.json", 
                                 timeout=30)
         version_json = data.json()
-        return version_json["sha256"]
+        hash = version_json["sha256"]
+        return hash
     except Exception as exception:
         print(f"Failed to retreive release hash: {exception}")
         print("Update aborted!")
