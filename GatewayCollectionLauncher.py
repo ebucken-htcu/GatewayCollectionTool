@@ -160,9 +160,9 @@ def update_app(download_url, latest_version):
 
     if (check_hashes(temp_exe)):
         copy_file(temp_exe, MAIN_EXE_NAME)
+        update_local_version(latest_version)
     delete_file(temp_exe)
-    update_local_version(latest_version)
-
+    
 
 def launch_app(download_url):
     if os.path.exists(MAIN_EXE_NAME):
