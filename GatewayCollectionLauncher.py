@@ -1,4 +1,5 @@
 from datetime import datetime
+import hashlib
 import subprocess
 import json
 import os
@@ -7,6 +8,18 @@ import requests
 VERSION_URL = "https://github.com/ebucken-htcu/GatewayCollectionTool/releases/latest/download/version.json"
 MAIN_EXE_NAME = "GatewayCollectionTool.exe"
 
+
+def hash(file_name):
+    file_hash = ""
+    try:
+        with open(file_name) as file_stream:
+            file_hash = hashlib.file_digest(file_stream, "sha256")
+            print(f"The sha256 of {file_name} is {file_hash}")
+            return(file_hash)
+    except Exception as exception:
+        print(f"Failed to hash {file_name}: {exception}")
+        return False
+    
 
 def update_local_version(new_version):
     try:
