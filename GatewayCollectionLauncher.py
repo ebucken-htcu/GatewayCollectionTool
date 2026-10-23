@@ -6,9 +6,18 @@ import json
 import os
 import requests
 import shutil
+import LauncherGUI
+import tkinter as tk
+import threading
+
+launcher_gui_instance = None
 
 VERSION_URL = "https://github.com/ebucken-htcu/GatewayCollectionTool/releases/latest/download/version.json"
 MAIN_EXE_NAME = "GatewayCollectionTool.exe"
+
+def update_gui(status, detail, is_finished):
+    global launcher_gui_instance
+    launcher_gui_instance.update_ui(status, detail, is_finished)
 
 
 def hash(file_name):
@@ -38,7 +47,7 @@ def get_github_hash():
     
 
 def check_hashes(file_name):
-    print(f"Verifying {file_name}...")
+    update_gui(f"Verifying {file_name}...", "Making Sure the download matches the remote", False)
     local_hash = hash(file_name)
     if local_hash == False:
         return False
@@ -82,6 +91,7 @@ def update_local_version(new_version):
 
 
 def get_local_version():
+    update_gui("Checking Local Version...", " ", False)
     try:
         with open('version.json', 'r', encoding='utf-8') as file:
             data = json.load(file)
@@ -91,6 +101,7 @@ def get_local_version():
     except FileNotFoundError:
         print("Error: the file version.json is missing!")
         print("Downloading new version.json...")
+        update_gui("Downloading new version.json...", "version.json was missing!", False)
         exe_response = requests.get(VERSION_URL, timeout=30)
         exe_response.raise_for_status()
         
@@ -104,6 +115,7 @@ def get_local_version():
     except json.JSONDecodeError:
         print("Error: the file version.json has Syntax errors!")
         print("Downloading new version.json...")
+        update_gui("Downloading new version.json...", "version.json had syntax errors!", False)
         exe_response = requests.get(VERSION_URL, timeout=30)
         exe_response.raise_for_status()
         
@@ -116,7 +128,7 @@ def get_local_version():
 
 
 def check_for_update():
-    print("checking latest version...")
+    update_gui("Checking latest version...", "checking the latest release...", False)
     try:
         response = requests.get(VERSION_URL, timeout=10)
         response.raise_for_status()
@@ -130,6 +142,7 @@ def check_for_update():
         if (local_version > "0"):
             if (latest_version > local_version):
                 print(f"New Version {latest_version} found! Downloading...")
+                update_gui(f"New Version {latest_version} found!", "Downloading...", False)
                 update_app(download_url, latest_version) 
             else:
                 print("Gateway Collection Tool is up to date!")
@@ -175,6 +188,19 @@ def launch_app(download_url):
         update_app(download_url)
         input("Please relaunch. Press Enter to Continue...")
 
-if __name__ == "__main__":
+def run_updating_logic(launcher_gui_instance):
     download_url = check_for_update()
     launch_app(download_url)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    launcher_gui_instance = LauncherGUI.LauncherWindow(root)
+
+    logic_thread = threading.Thread(
+        target = run_updating_logic,
+        args=(launcher_gui_instance,), 
+        daemon=True
+    )
+
+    logic_thread.start()
+    root.mainloop()
