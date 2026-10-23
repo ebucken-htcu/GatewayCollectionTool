@@ -19,17 +19,20 @@ def update_gui(status, detail, is_finished):
     global launcher_gui_instance
     launcher_gui_instance.update_ui(status, detail, is_finished)
 
+def add_log(text):
+    global launcher_gui_instance
+    launcher_gui_instance.add_log(text)
 
 def hash(file_name):
     file_hash = ""
     try:
         with open(file_name, "rb") as file_stream:
             file_hash = hashlib.file_digest(file_stream, "sha256").hexdigest()
-            print(f"The sha256 of {file_name} is {file_hash}")
+            add_log(f"The sha256 of {file_name} is {file_hash}")
             return(file_hash)
     except Exception as exception:
-        print(f"Failed to hash {file_name}: {exception}")
-        print("Update aborted!")
+        add_log(f"Failed to hash {file_name}: {exception}")
+        add_log("Update aborted!")
         return False
 
 
@@ -41,8 +44,8 @@ def get_github_hash():
         hash = version_json["sha256"]
         return hash
     except Exception as exception:
-        print(f"Failed to retreive release hash: {exception}")
-        print("Update aborted!")
+        add_log(f"Failed to retreive release hash: {exception}")
+        add_log("Update aborted!")
         return False
     
 
@@ -56,10 +59,11 @@ def check_hashes(file_name):
     if remote_hash == False:
         return False
     elif local_hash == remote_hash:
-        print("Download Verified!")
+        add_log("Download Verified!")
+        update_gui("Download Verified!", "moving forward...", False)
         return True
     elif remote_hash != local_hash:
-        print(f"Downloaded hash does NOT match! Update aborted!")
+        add_log(f"Downloaded hash does NOT match! Update aborted!")
 
 
 def delete_file(file_name):
@@ -67,14 +71,14 @@ def delete_file(file_name):
         file_path = Path(file_name)
         file_path.unlink(missing_ok=True)
     except Exception as exception:
-        print(f"failed to delete file {file_name}: {exception}")
+        add_log(f"failed to delete file {file_name}: {exception}")
 
 
 def copy_file(from_file, to_file):
     try:
         shutil.copyfile(from_file, to_file)
     except Exception as exception:
-        print(f"Replacing file failed: {exception}")
+        add_log(f"Replacing file failed: {exception}")
 
 
 def update_local_version(new_version):
@@ -85,9 +89,9 @@ def update_local_version(new_version):
         with open('version.json', 'w', encoding='utf-8') as file:
             json.dump(data, file, indent=4)
     except FileNotFoundError:
-        print("Error: the file version.json is missing!")
+        add_log("Error: the file version.json is missing!")
     except json.JSONDecodeError:
-        print("Error: version.json contains invalid JSON syntax!")
+        add_log("Error: version.json contains invalid JSON syntax!")
 
 
 def get_local_version():
@@ -96,11 +100,11 @@ def get_local_version():
         with open('version.json', 'r', encoding='utf-8') as file:
             data = json.load(file)
             version = data["version"]
-            print(f"Currently running version: {version}")
+            add_log(f"Currently running version: {version}")
             return version
     except FileNotFoundError:
-        print("Error: the file version.json is missing!")
-        print("Downloading new version.json...")
+        add_log("Error: the file version.json is missing!")
+        add_log("Downloading new version.json...")
         update_gui("Downloading new version.json...", "version.json was missing!", False)
         exe_response = requests.get(VERSION_URL, timeout=30)
         exe_response.raise_for_status()
@@ -109,12 +113,12 @@ def get_local_version():
             with open("version.json", "wb") as file_stream:
                 file_stream.write(exe_response.content)
         except Exception as exception:
-            print(f"failed to download new version.json: {exception}")
+            add_log(f"failed to download new version.json: {exception}")
         
         return "0"
     except json.JSONDecodeError:
-        print("Error: the file version.json has Syntax errors!")
-        print("Downloading new version.json...")
+        add_log("Error: the file version.json has Syntax errors!")
+        add_log("Downloading new version.json...")
         update_gui("Downloading new version.json...", "version.json had syntax errors!", False)
         exe_response = requests.get(VERSION_URL, timeout=30)
         exe_response.raise_for_status()
@@ -123,7 +127,7 @@ def get_local_version():
             with open("version.json", "wb") as file_stream:
                 file_stream.write(exe_response.content)
         except Exception as exception:
-            print(f"failed to download new version.json: {exception}")
+            add_log(f"failed to download new version.json: {exception}")
         return "-1"
 
 
@@ -141,22 +145,22 @@ def check_for_update():
 
         if (local_version > "0"):
             if (latest_version > local_version):
-                print(f"New Version {latest_version} found! Downloading...")
+                add_log(f"New Version {latest_version} found! Downloading...")
                 update_gui(f"New Version {latest_version} found!", "Downloading...", False)
                 update_app(download_url, latest_version) 
             else:
-                print("Gateway Collection Tool is up to date!")
+                update_gui("Gateway Collection Tool is up to date!", " ", False)
         elif (local_version == "0"):
-            print(f"Downloading Latest release because version.json was missing...")
+            add_log(f"Downloading Latest release because version.json was missing...")
             update_app(download_url, latest_version)
         elif (local_version == "-1"):
-            print(f"Downloading Latest release because version.json was invalid...")
+            add_log(f"Downloading Latest release because version.json was invalid...")
             update_app(download_url, latest_version)
 
         return download_url
     except Exception as exception:
-        print(f"Update failed or skipped: {exception}")
-        print(f"Launching existing version")
+        add_log(f"Update failed or skipped: {exception}")
+        add_log(f"Launching existing version")
         return "failed to get download_url"
 
 
@@ -170,7 +174,8 @@ def update_app(download_url, latest_version):
         with open(temp_exe, "wb") as file_stream:
             file_stream.write(exe_response.content)
     except Exception as exception:
-        print(f"failed to download new {MAIN_EXE_NAME}: {exception}")
+        add_log(f"failed to download new {MAIN_EXE_NAME}: {exception}")
+        update_gui(f"Failed to download new {MAIN_EXE_NAME}", "Check the console for more details..", False)
 
     if (check_hashes(temp_exe)):
         copy_file(temp_exe, MAIN_EXE_NAME)
@@ -181,12 +186,13 @@ def update_app(download_url, latest_version):
 def launch_app(download_url):
     if os.path.exists(MAIN_EXE_NAME):
         subprocess.Popen([MAIN_EXE_NAME])
-        print("Launching Gateway Collection Tool!")
+        add_log("Launching Gateway Collection Tool!..")
+        update_gui("Launching Gateway Collection Tool...", " ", True)
     else:
-        print(f"Error: {MAIN_EXE_NAME} missing!")
-        print(f"Downloading latest {MAIN_EXE_NAME}...")
+        add_log(f"Error: {MAIN_EXE_NAME} missing!")
+        add_log(f"Downloading latest {MAIN_EXE_NAME}...")
         update_app(download_url)
-        input("Please relaunch. Press Enter to Continue...")
+        update_gui(f"Redownloaded {MAIN_EXE_NAME}", "Please re-launch to continue...", True)
 
 def run_updating_logic(launcher_gui_instance):
     download_url = check_for_update()
