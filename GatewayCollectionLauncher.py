@@ -11,6 +11,7 @@ import tkinter as tk
 import threading
 
 launcher_gui_instance = None
+latest_version = None
 
 VERSION_URL = "https://github.com/ebucken-htcu/GatewayCollectionTool/releases/latest/download/version.json"
 MAIN_EXE_NAME = "GatewayCollectionTool.exe"
@@ -35,6 +36,9 @@ def hash(file_name):
         add_log("Update aborted!")
         return False
 
+def _set_latest_version(version):
+    global latest_version
+    latest_version = version
 
 def get_github_hash():
     try:
@@ -138,7 +142,7 @@ def check_for_update():
         response.raise_for_status()
         data = response.json()
 
-        latest_version = data["version"]
+        _set_latest_version(data["version"])
         download_url = data["download_url"]
 
         local_version = get_local_version()
@@ -155,7 +159,7 @@ def check_for_update():
             update_app(download_url, latest_version)
         elif (local_version == "-1"):
             add_log(f"Downloading Latest release because version.json was invalid...")
-            update_app(download_url, latest_version)
+            update_app(download_url)
 
         return download_url
     except Exception as exception:
@@ -164,8 +168,9 @@ def check_for_update():
         return "failed to get download_url"
 
 
-def update_app(download_url, latest_version):
-    
+def update_app(download_url):
+
+    update_gui(f"Downloading {MAIN_EXE_NAME}...", f"Downloading version: {latest_version}", False)
     exe_response = requests.get(download_url, timeout=30)
     exe_response.raise_for_status()
     temp_exe = f"{MAIN_EXE_NAME}.temp"
@@ -191,6 +196,7 @@ def launch_app(download_url):
     else:
         add_log(f"Error: {MAIN_EXE_NAME} missing!")
         add_log(f"Downloading latest {MAIN_EXE_NAME}...")
+        update_gui(f"{MAIN_EXE_NAME} is missing...", "Re-downloading...", False)
         update_app(download_url)
         update_gui(f"Redownloaded {MAIN_EXE_NAME}", "Please re-launch to continue...", True)
 

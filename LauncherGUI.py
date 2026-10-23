@@ -42,4 +42,4 @@ class LauncherWindow:
         
         if is_finished:
             self.progress.stop()
-            self.root.after(1000, self.root.destroy)
+            self.root.after(5000, self.root.destroy)
