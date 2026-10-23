@@ -6,7 +6,7 @@ class LauncherWindow:
     def __init__(self, root):
         self.root = root
         self.root.title("Gateway Collection Tool Launcher")
-        self.root.geometry("400x350")
+        self.root.geometry("450x350")
         self.root.resizable(False, False)
         
         self.frame = ttk.Frame(root, padding="20")
@@ -34,7 +34,7 @@ class LauncherWindow:
         self.root.after(0, lambda: self._safe_add_log(text))
 
     def _safe_add_log(self, text):
-        self.log_box.insert(tk.END, f"{text}\\n")
+        self.log_box.insert(tk.END, f"{text}\n")
 
     def _safe_update(self, status, detail, is_finished):
         self.status_label.config(text=status)
