@@ -14,5 +14,4 @@ This is a Digital Forensics and Incident Response tool that you can run to colle
 ### Update Plans
 - Buisness collection mode
 - auto-generating a pdf report with all the information at the end
-- better solution to showing the user the logs than keeping a terminal solution open. I would either include a embedded window with the logs in the GUI or show the latest line on the gui
 - some sort of display to show how far the script is through its collection or a spinning wheel to remind people it is still running
